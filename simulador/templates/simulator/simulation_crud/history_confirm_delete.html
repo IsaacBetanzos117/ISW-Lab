@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar simulación{% endblock %}}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow border-danger">
+                    <div class="card-body text-center p-4">
+                        <h4 class="text-danger mb-3">¿Desechar simulación?</h4>
+                        <p>Estás a punto de eliminar permanentemente la ejecución <strong>#{{ sequence_id }}</strong> basada en la configuración "{{ object.configuration.configuration_name }}".</p>
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <a href="{% url 'simulation_history' %}" class="btn btn-secondary me-2">Cancelar</a>
+                            <button type="submit" class="btn btn-danger">Sí, eliminar registro</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

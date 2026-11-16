@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte gerencial</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; padding: 20px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #0d6efd; padding-bottom: 20px; }
+        .header h1 { color: #0d6efd; margin-bottom: 5px; }
+        .filters { text-align: center; font-size: 14px; color: #555; margin-bottom: 30px; }
+        .chart-section { text-align: center; margin-bottom: 40px; page-break-inside: avoid; }
+        .chart-section img { max-width: 100%; border-radius: 8px; border: 1px solid #ddd; padding: 10px; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 11px; color: #888; border-top: 1px solid #ddd; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reporte gerencial de simulaciones</h1>
+        <p>Sistema ISW-Lab</p>
+    </div>
+
+    <div class="filters">
+        <p><strong>Filtros aplicados:</strong></p>
+        {% if start_date or end_date %} <!-- Filtros de fecha -->
+            <p>Periodo: {{ start_date|default:"Inicio" }} - {{ end_date|default:"Actualidad" }}</p>
+        {% endif %}
+
+        <!-- Filtros de grupo -->
+        {% if selected_group %}
+            <p>Grupo: {{ selected_group.name }}</p>
+        {% endif %}
+        
+        <!-- Filtros sin aplicación, es para casos donde no se aplican filtros -->
+        {% if not start_date and not end_date and not selected_group %}
+            <p>Histórico completo general.</p>
+        {% endif %}
+    </div>
+
+    <!-- Gráfica de Actividad, si la gráfica no existe es None -->
+    {% if chart_activity %}
+    <div class="chart-section">
+        <img src="data:image/png;base64,{{ chart_activity }}" alt="Gráfica de Actividad">
+    </div>
+    {% endif %}
+
+    <!-- Gráfica de Morfología, si la gráfica no existe es None -->
+    {% if chart_morphology %}
+    <div class="chart-section">
+        <img src="data:image/png;base64,{{ chart_morphology }}" alt="Gráfica de Morfología">
+    </div>
+    {% endif %}
+
+    <!-- Gráfica de Volumen, si la gráfica no existe es None -->
+    {% if chart_volume %}
+    <div class="chart-section">
+        <img src="data:image/png;base64,{{ chart_volume }}" alt="Gráfica de Volumen">
+    </div>
+    {% endif %}
+
+    <!-- Gráfica de Crecimiento del Catálogo, si la gráfica no existe es None -->
+    {% if chart_catalog %}
+    <div class="chart-section">
+        <img src="data:image/png;base64,{{ chart_catalog }}" alt="Gráfica de Crecimiento del Catálogo">
+    </div>
+    {% endif %}
+
+    <!-- Tabla de últimas referencias añadidas al catálogo -->
+    {% if catalog_records %}
+    <div style="margin-top: 20px; width: 90%; margin-left: auto; margin-right: auto;">
+        <h3 style="color: #555; text-align: left; font-size: 16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+            Últimas referencias añadidas al catálogo
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; margin-top: 10px;">
+            <thead>
+                <tr style="background-color: #f8f9fa;">
+                    <th style="padding: 8px; border-bottom: 2px solid #ddd;">Nebulosa</th>
+                    <th style="padding: 8px; border-bottom: 2px solid #ddd;">Tipo morfológico</th>
+                    <th style="padding: 8px; border-bottom: 2px solid #ddd;">Fecha de registro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iteración sobre las referencias del catálogo -->
+                {% for ref in catalog_records %}
+                <tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ ref.nebula_name }}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ ref.morphological_type }}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ ref.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        Modelo Computacional para Simular la Evolución de Nebulosas como Herramienta Educativa y Divulgativa.(Generado automáticamente)
+    </div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Auditoría del Grupo{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-4">
+        <div class="row mb-3 align-items-center">
+            <div class="col">
+                <h2 class="text-success"><i class="fas fa-clipboard-check"></i> Auditoría de clase</h2>
+                <p class="text-muted">Resultados y descargas de las simulaciones de todos tus alumnos.</p>
+            </div>
+            <div class="col text-end">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Regresar a la clase
+                </a>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Configuración</th>
+                            <th>Morfología</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Descargas y render</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history_records %}
+                        <tr>
+                            <td class="align-middle"><strong>{{ record.configuration.author.username }}</strong></td>
+                            <td class="align-middle">{{ record.configuration.configuration_name }}</td>
+                            <td class="align-middle">{{ record.configuration.get_morphological_type_display }}</td>
+                            <td class="align-middle">{{ record.calculated_at|date:"d M Y, H:i" }}</td>
+                            <td class="align-middle">
+                                {% if record.stability_status == 'estable' %}
+                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> Estable</span>
+                                {% else %}
+                                    <span class="badge bg-danger"><i class="fas fa-exclamation-triangle"></i> Divergente</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                {% if record.stability_status == 'estable' %}
+                                    <a href="{% url 'history_render' record.pk %}" class="btn btn-sm btn-info text-white me-1" title="Ver 3D interactivo">
+                                        <i class="fas fa-cube"></i>
+                                    </a>
+                                    <a href="{% url 'download_file' record.pk 'xlsx' %}" class="btn btn-sm btn-success text-white me-1" title="Descargar Excel">
+                                        <i class="fas fa-file-excel"></i>
+                                    </a>
+                                    <a href="{% url 'download_file' record.pk 'pdf' %}" class="btn btn-sm btn-danger text-white me-1" title="Descargar PDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                    <a href="{% url 'download_file' record.pk 'png' %}" class="btn btn-sm btn-secondary text-white me-1" title="Descargar PNG">
+                                        <i class="fas fa-image"></i>
+                                    </a>
+                                    <a href="{% url 'download_file' record.pk 'jpg' %}" class="btn btn-sm btn-warning text-dark" title="Descargar JPG">
+                                        <i class="fas fa-file-image"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">Simulación fallida, no hay datos.</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                                Tus alumnos aún no han ejecutado simulaciones.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

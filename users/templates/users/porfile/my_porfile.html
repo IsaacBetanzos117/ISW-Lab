@@ -1,0 +1,62 @@
+{% extends 'users/base.html' %}
+{% block title %}Mi Perfil | ISW-Lab{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <!-- Cabecera personalizada -->
+                    <div class="card-header bg-dark text-white text-center py-4">
+                        <i class="fas fa-user-astronaut fa-4x mb-3 text-primary"></i>
+                        <h3 class="mb-0">Mi Cuenta</h3>
+                        <p class="text-muted mb-0">Gestiona tu información personal</p>
+                    </div>
+                    
+                    <div class="card-body p-5">
+                        <!-- Información de solo lectura -->
+                        <div class="row mb-4 text-center">
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase mb-1">Nombre de usuario</h6>
+                                <p class="fs-5 fw-bold">{{ user.username }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted text-uppercase mb-1">Rol actual</h6>
+                                <p class="fs-5 fw-bold text-primary">
+                                    {% for group in user.groups.all %}
+                                        {{ group.name }}{% if not forloop.last %}, {% endif %}
+                                    {% empty %}
+                                        Sin rol asignado
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <hr class="mb-4">
+
+                        <!-- Formulario de actualización -->
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            
+                            <div class="d-grid gap-2 mt-4 text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save"></i> Guardar cambios
+                                </button>
+                                <a href="{% url 'config_list' %}" class="btn" style="background-color: #6c757d; text-decoration: none;">
+                                    <i class="fas fa-times"></i> Cancelar <!-- TODO: CAMBIAR URL A OTRA, AHORITA DE PRUEBA-->
+                                </a>
+                                
+                                <!-- El enlace de la contraseña -->
+                                <a href="{% url 'password_reset' %}" style="color: var(--secondary-color); font-weight: bold; text-decoration: underline; margin-left: 15px;">
+                                    <i class="fas fa-key"></i> Cambiar mi contraseña
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

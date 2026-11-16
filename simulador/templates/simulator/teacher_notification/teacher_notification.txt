@@ -1,0 +1,12 @@
+¡Nueva simulación ejecutada!
+
+Hola, Docente.
+El estudiante {{ student_name }} acaba de finalizar una práctica en el simulador ISW-Lab.
+
+- Morfología / Configuración: {{ simulation_name }}
+- Estado de estabilidad: {{ status }}
+- Tiempo de ejecución: {{ time|floatformat:4 }} segundos
+
+Se ha adjuntado a este correo un archivo CSV con los parámetros físicos utilizados en este experimento.
+
+Este es un mensaje automático generado por ISW-Lab.

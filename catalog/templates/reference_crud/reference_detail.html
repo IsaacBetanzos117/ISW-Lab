@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ reference.nebula_name }}Detalles{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-4">
+        <!-- Navegación y botones de acción superiores -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{% url 'reference_list' %}" class="btn btn-outline-secondary btn-sm" aria-label="Volver al catálogo">
+                <i class="fas fa-arrow-left me-2"></i> Volver al catálogo
+            </a>
+            
+            <!-- Controles de Edición/Eliminación -->
+            {% if is_teacher_or_admin %}
+                <div class="btn-group" role="group" aria-label="Acciones administrativas">
+                    <a href="{% url 'reference_update' reference.pk %}" class="btn btn-warning btn-sm fw-bold">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </a>
+                    <a href="{% url 'reference_delete' reference.pk %}" class="btn btn-danger btn-sm fw-bold">
+                        <i class="fas fa-trash-alt me-1"></i> Eliminar
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Tarjeta de detalle principal -->
+        <div class="card shadow-lg border-secondary mb-5">
+            <div class="card-header bg-black border-secondary py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0 text-white" style="color: var(--accent-cyan);">
+                        <i class="fas fa-satellite-dish me-2"></i>{{ reference.nebula_name }}
+                    </h2>
+                    <span class="badge bg-dark border border-secondary text-light fs-6 px-3 py-2">
+                        {{ reference.get_morphological_type_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="card-body p-4" style="background-color: var(--card-surface);">
+                <div class="row g-4">
+                    <!-- Columna izquierda: Metadatos -->
+                    <div class="col-md-4 border-end border-secondary">
+                        <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2">Información general</h5>
+                        
+                        <div class="mb-3">
+                            <span class="text-muted d-block small"><i class="fas fa-book me-1"></i> Fuente bibliográfica</span>
+                            <span class="fw-bold text-dark">{{ reference.bibliographic_source }}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="text-muted d-block small"><i class="fas fa-user-astronaut me-1"></i> Registrado por</span>
+                            <span class="text-dark">{{ reference.author.username }}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="text-muted d-block small"><i class="fas fa-calendar-plus me-1"></i> Fecha de Creación</span>
+                            <span class="text-dark">
+                                {% load i18n %} <!-- Sirve para cargar las herramientas de internacionalización (I18N) dentro de una plantilla HTML -->
+                                {% language 'es' %}
+                                    {{ reference.created_at|date:"l"|capfirst }},
+                                    {{ reference.created_at|date:"j" }} de <!-- Imprime el número del día -->
+                                    {{ reference.created_at|date:"F"|capfirst }} de <!-- Imprime el mes con mayúscula -->
+                                    {{ reference.created_at|date:"Y" }} <!-- Imprime el año -->
+                                {% endlanguage %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna derecha: Valores teóricos -->
+                    <div class="col-md-8">
+                        <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2">Valores teóricos extraídos</h5>
+                        <!-- Panel tipo terminal para los datos crudos -->
+                        <div class="p-3 rounded" style="background-color: #2a2a2a; border: 1px solid var(--border-subtle);">
+                            <!-- El filtro linebreaksbr convierte los "Enter" del formulario en etiquetas <br> de HTML -->
+                            <p class="text-light mb-0" style="font-family: monospace; font-size: 1.05rem;">
+                                {{ reference.theoretical_values|linebreaksbr }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Añadir notas de la simulación{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Añadir/Editar notas de la simulación #{{ sequence_id }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <h6 class="alert-heading fw-bold">
+                        <i class="fas fa-microscope"></i> Detalles del experimento:
+                    </h6>
+                    <hr>
+                    <ul class="mb-0">
+                        <li><strong>Configuración base:</strong> {{ object.configuration.configuration_name }}</li>
+                        <li><strong>Morfología objetivo:</strong> {{ object.configuration.get_morphological_type_display }}</li>
+                        <li><strong>Estado del cálculo:</strong> {{ object.stability_status|title }}</li>
+                        <li><strong>Fecha de ejecución:</strong> {{ object.calculated_at|date:"d M Y, H:i" }}</li>
+                    </ul>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar notas
+                        </button>
+                        <a href="{% url 'simulation_history' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

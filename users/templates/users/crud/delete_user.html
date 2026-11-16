@@ -1,0 +1,31 @@
+{% extends 'users/base.html' %}
+{% block title %}Eliminar Usuario - ISW-Lab{% endblock %}
+{% block content %}
+<section>
+    <div style="max-width: 500px; margin: 40px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+        
+        <h2 style="color: var(--danger-color); margin-bottom: 15px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Confirmar Eliminación
+        </h2>
+        
+        <p style="font-size: 1.1em; margin-bottom: 30px; color: var(--text-color);">
+            ¿Estás seguro de que deseas eliminar permanentemente al usuario <strong>{{ object.username }}</strong>?<br>
+            <span style="font-size: 0.9em; color: #666;">Esta acción no se puede deshacer.</span>
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Botones de decisión -->
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <a href="{% url 'user_list' %}" class="btn" style="background-color: #7f8c8d; color: white;">
+                    <i class="fa-solid fa-xmark"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa-solid fa-trash"></i> Eliminar usuario
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

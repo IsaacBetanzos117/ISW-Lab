@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="text-primary"><i class="fas fa-rocket"></i> Panel de control</h2>
+                <p class="text-muted">Bienvenido al simulador astrofísico ISW-Lab, {{ user.username }}.</p>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            
+            <!-- GESTIÓN ESCOLAR / CLASES (Para Todos: Admin, Docente y Estudiante) -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-left-warning bg-light">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users-class fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Mis Clases / Grupos</h5>
+                        <p class="card-text text-muted">Ingresa a tus clases para acceder al simulador y tus bitácoras.</p>
+                        <a href="{% url 'group_list' %}" class="btn btn-warning text-dark w-100">Entrar a mis clases</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REFERENCIAS CIENTÍFICAS (Para Todos) -->
+            <div class="col">
+                <div class="card h-100 shadow-sm border-left-info">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book-journal-whills fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Referencias científicas</h5>
+                        <p class="card-text text-muted">
+                            {% if is_admin or is_teacher %}
+                                Gestiona el catálogo empírico.
+                            {% else %}
+                                Consulta datos astrofísicos para tus clases.
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'reference_list' %}" class="btn btn-outline-info w-100">Abrir catálogo</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GESTIÓN DE USUARIOS (Solo Admin) -->
+            {% if is_admin %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-left-danger bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users-cog fa-3x text-danger mb-3"></i>
+                            <h5 class="card-title">Gestión de usuarios</h5>
+                            <p class="card-text text-muted">Altas, bajas y control de cuentas de la plataforma.</p>
+                            <a href="{% url 'user_list' %}" class="btn btn-danger w-100">Control de usuarios</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- MÓDULO DE REPORTES (Admin y Docente) -->
+            {% if is_admin or is_teacher %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-left-primary bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Reportes gerenciales</h5>
+                            <p class="card-text text-muted">Visualiza la actividad, tendencias morfológicas y exporta estadísticas.</p>
+                            <a href="{% url 'management_reports' %}" class="btn btn-primary w-100">Ver Reportes</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endblock %}

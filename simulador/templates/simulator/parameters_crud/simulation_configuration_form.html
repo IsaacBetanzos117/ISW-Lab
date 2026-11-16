@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} - ISW-Lab{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5" style="max-width: 800px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h3 class="mb-0"><i class="fa-solid fa-sliders"></i> {{ title }}</h3>
+        </div>
+        <div class="card-body p-4">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Error al guardar:</strong>
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                
+                <!-- ESTE INPUT OCULTO PRESERVA EL FLUJO DE RETORNO -->
+                {% if next_url %}
+                    <input type="hidden" name="next" value="{{ next_url }}">
+                {% endif %}
+                
+                <div class="row g-3">
+                    {% for field in form %}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary">
+                                {{ field.label }}
+                            </label>
+                            
+                            {{ field }}
+                            
+                            {% if field.errors %}
+                                <div class="text-danger mt-1 small">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> {{ field.errors|striptags }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ cancel_url }}" class="btn btn-outline-secondary me-2">
+                        <i class="fa-solid fa-xmark"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-floppy-disk"></i> {{ button_text }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Pequeño script para asegurar que los inputs de Django tengan la clase form-control -->
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if(input.type !== 'checkbox' && input.type !== 'hidden') {
+                input.classList.add('form-control');
+            }
+        });
+    });
+</script>
+{% endblock %}

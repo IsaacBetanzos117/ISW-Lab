@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar configuración - ISW-Lab{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-danger shadow-sm">
+                    <div class="card-header bg-danger text-white py-3">
+                        <h4 class="mb-0">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Confirmar acción destructiva
+                        </h4>
+                    </div>
+                    <div class="card-body text-center p-5">
+                        <i class="fa-solid fa-trash-can fa-4x text-danger mb-4 opacity-50"></i>
+                        
+                        <h5 class="card-title">¿Estás seguro de que deseas eliminar este experimento?</h5>
+                        <p class="text-muted mt-3">Se eliminarán permanentemente todos los parámetros de la configuración:</p>
+                        <p class="fs-4 fw-bold text-dark mb-4">"{{ object.configuration_name }}"</p>
+                        
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <a href="{% url 'simulation_history' %}" class="btn btn-secondary px-4">
+                                    Cancelar y volver
+                                </a>
+                                <button type="submit" class="btn btn-danger px-4">
+                                    <i class="fa-solid fa-skull-crossbones"></i> Sí, eliminar permanentemente
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

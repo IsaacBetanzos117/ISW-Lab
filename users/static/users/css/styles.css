@@ -1,0 +1,163 @@
+/* =========================================
+   Sistema de Diseño (Design System - IN.2)
+   Colores para WCAG AA (Contraste > 4.5:1)
+   ========================================= */
+:root {
+    --primary-color: #172B4D; /* Azul muy oscuro */
+    --secondary-color: #0052CC; /* Azul WCAG */
+    --success-color: #0B6623; /* Verde oscuro WCAG */
+    --danger-color: #C53030; /* Rojo oscuro WCAG */
+    --bg-color: #F4F5F7;
+    --text-color: #1A1A1A;
+    --focus-ring: #4C9AFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Navegación por teclado */
+*:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.navbar-menu a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.navbar-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Contenedor y alertas semánticas */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.alert.success { background-color: var(--success-color); }
+.alert.error { background-color: var(--danger-color); }
+.alert.info { background-color: var(--secondary-color); }
+
+/* Formularios y retroalimentación en tiempo real */
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+/* Bordes semánticos para validación HTML5 */
+input:not(:placeholder-shown):valid {
+    border-color: var(--success-color);
+    border-width: 2px;
+}
+
+input:not(:placeholder-shown):invalid {
+    border-color: var(--danger-color);
+    border-width: 2px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98); /* Feedback táctil/visual IN.2 */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse; /* Une los bordes para que sea una sola línea limpia */
+    margin-top: 20px;
+    background-color: white;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    border: 1px solid #d1d5db; /* Dibuja los "rectángulos" de cada celda */
+    text-align: left;
+    vertical-align: middle;
+}
+
+table th {
+    background-color: var(--primary-color); /* Fondo oscuro para el encabezado */
+    color: white;
+    font-weight: bold;
+    border-color: var(--primary-color);
+}
+
+/* Efecto cebra: oscurece ligeramente las filas pares para guiar la lectura */
+table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Efecto hover: resalta la fila completa al pasar el cursor (Heurística IN.2) */
+table tbody tr:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-primary { background-color: var(--secondary-color); }
+.btn-primary:hover { background-color: #0040A0; }
+
+.btn-danger { background-color: var(--danger-color); }
+.btn-danger:hover { background-color: #9B2626; }

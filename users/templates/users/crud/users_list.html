@@ -1,0 +1,76 @@
+{% extends 'users/base.html' %}
+{% block title %}Consulta de usuarios - ISW-Lab{% endblock %}
+{% block content %}
+<div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: var(--primary-color); margin: 0;">
+            <i class="fa-solid fa-users"></i> Lista de usuarios
+        </h2>
+        <a href="{% url 'create_user' %}" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
+        </a>
+    </div>
+
+    {% if users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td><strong>{{ forloop.counter }}</strong></td>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.groups.all %}
+                                {% for group in user.groups.all %}
+                                    {% if group.name == 'Administrador' %}
+                                        <span style="background-color: var(--success-color); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                            <i class="fa-solid fa-user-shield"></i> Administrador
+                                        </span>
+                                    {% elif group.name == 'Docente/Divulgador' %}
+                                        <span style="background-color: #f39c12; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                            <i class="fa-solid fa-chalkboard-user"></i> Docente/Divulgador
+                                        </span>
+                                    {% else %}
+                                        <span style="background-color: #7f8c8d; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                            <i class="fa-solid fa-user-graduate"></i> Estudiante
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span style="background-color: #e74c3c; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                    Sin rol
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'update_user' user.pk %}" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.9em; margin-right: 5px;" title="Editar">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </a>
+                            {% if user != request.user %}
+                                <a href="{% url 'delete_user' user.pk %}" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.9em;" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert info" style="margin-top: 20px;">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>No hay usuarios registrados en el sistema.</span>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

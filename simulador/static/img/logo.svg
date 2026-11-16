@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 50" width="220" height="50">
+    <!-- Órbitas / Estructura de Nebulosa -->
+    <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="#4C9AFF" stroke-width="2.5" transform="rotate(-30 25 25)"/>
+    <ellipse cx="25" cy="25" rx="20" ry="8" fill="none" stroke="#4C9AFF" stroke-width="2.5" transform="rotate(30 25 25)"/>
+    
+    <!-- Núcleo estelar central -->
+    <circle cx="25" cy="25" r="6" fill="#F4F5F7" />
+    
+    <!-- Texto Tipográfico -->
+    <text x="55" y="34" font-family="'Segoe UI', Tahoma, sans-serif" font-size="24" font-weight="bold" fill="#F4F5F7">
+        ISW<tspan fill="#4C9AFF">-Lab</tspan>
+    </text>
+</svg>

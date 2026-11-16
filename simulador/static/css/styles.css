@@ -1,0 +1,59 @@
+:root {
+    /* Paleta de alto contraste (Ratio > 4.5:1 según WCAG) */
+    --text-primary: #1A1A1A;
+    --text-secondary: #4A4A4A;
+    --bg-main: #FFFFFF;
+    --bg-light: #F8F9FA;
+    --color-error: #D32F2F;
+    --color-success: #2E7D32;
+    --color-focus: #0056B3;
+    
+    /* Jerarquía y consistencia (Heurísticas de Nielsen) */
+    --font-family-base: 'Segoe UI', system-ui, sans-serif;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+}
+
+body {
+    font-family: var(--font-family-base);
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+    line-height: 1.6; /* Facilita la carga cognitiva */
+}
+
+/* Elimina barreras tecnológicas permitiendo uso sin ratón */
+a:focus, button:focus, input:focus, select:focus {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.2);
+}
+
+/* Prevención de errores con retroalimentación clara */
+.form-control {
+    border: 2px solid #CED4DA;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: border-color 0.3s ease;
+}
+
+/* Clases dinámicas inyectadas por JS para validación en tiempo real */
+.is-invalid {
+    border-color: var(--color-error) !important;
+    background-color: #FFEBEE; /* Fondo sutil para alertar sin depender solo del borde */
+}
+
+.is-valid {
+    border-color: var(--color-success) !important;
+}
+
+.feedback-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.feedback-error { color: var(--color-error); }
+.feedback-success { color: var(--color-success); }

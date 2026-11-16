@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Clase: {{ group.class_name }}{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <div class="p-5 mb-4 bg-dark text-white rounded-3 shadow">
+            <div class="container-fluid py-2">
+                <h1 class="display-5 fw-bold"><i class="fa-solid fa-chalkboard-user"></i> {{ group.class_name }}</h1>
+                <p class="col-md-8 fs-4">Profesor: {{ group.teacher.username }} | Alumnos inscritos: {{ group.students.count }}</p>
+                <a href="{% url 'group_list' %}" class="btn btn-outline-light mt-3"><i class="fa-solid fa-arrow-left"></i> Volver a mis clases</a>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+            
+            <div class="col">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-body text-center p-4">
+                        <i class="fa-solid fa-rocket fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Simulador astrofísico</h4>
+                        <p class="card-text text-muted">Ejecuta el modelo de nebulosas planetarias para esta clase.</p>
+
+                        <!-- TODO: Aquí pondremos la URL que lanza el simulador vinculado a este grupo -->
+                        <a href="{% url 'config_list' %}" class="btn btn-primary w-100 fs-5">Iniciar simulación</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-success">
+                    <div class="card-body text-center p-4">
+                        <i class="fa-solid fa-flask fa-3x text-success mb-3"></i>
+                        <h4 class="card-title">Bitácora del grupo</h4>
+                        <p class="card-text text-muted">Revisa las simulaciones generadas en esta clase.</p>
+                        
+                        <!-- Si el usuario es el maestro o admin, va a la vista que construimos hoy para auditar a todos -->
+                        {% if user == group.teacher or user.is_superuser or 'Administrador' in user.groups.all.values_list|join:',' %}
+                            <a href="{% url 'group_simulations' group.pk %}" class="btn btn-success w-100 fs-5">Auditar alumnos</a>
+                        
+                        <!-- Si es un alumno normal, el botón lo manda directo a SU propio historial personal que ya tenías hecho -->
+                        {% else %}
+                            <a href="{% url 'simulation_history' %}" class="btn btn-success w-100 fs-5">Ver mis resultados</a>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

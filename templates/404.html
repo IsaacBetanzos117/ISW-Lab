@@ -1,0 +1,24 @@
+{% extends 'users/base.html' %}
+{% block title %}Página no encontrada - ISW-Lab{% endblock %}
+{% block content %}
+<section>
+    <div style="max-width: 600px; margin: 80px auto; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;">
+        <h1 style="font-size: 80px; color: var(--danger-color, #e74c3c); margin: 0; line-height: 1;">
+            404
+        </h1>
+        <h2 style="color: var(--primary-color); margin-top: 10px; margin-bottom: 20px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Página no encontrada
+        </h2>
+        
+        <p style="font-size: 1.1em; margin-bottom: 30px; color: var(--text-color);">
+            Ups 😕 La ruta a la que intentas acceder no existe en el simulador ISW-Lab o fue movida.
+        </p>
+
+        <div style="display: flex; justify-content: center;">
+            <a href="{% url 'user_list' %}" class="btn btn-primary" style="padding: 10px 20px; font-size: 1em; text-decoration: none;">
+                <i class="fa-solid fa-house"></i> Volver al sistema
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

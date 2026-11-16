@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="row mb-4">
+            <div class="col">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Regresar al panel.
+                </a>
+            </div>
+        </div>
+        <h2><i class="fas fa-chart-pie text-primary"></i> Reportes gerenciales</h2>
+        <div>
+            <!-- Los botones ya envían los filtros actuales a las vistas de exportación -->
+            <a href="{% url 'export_reports_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-outline-danger">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </a>
+            <a href="{% url 'export_reports_excel' %}?{{ request.GET.urlencode }}" class="btn btn-outline-success">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros dinámicos -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-start">
+                <div class="col-md-3">
+                    {{ form.start_date.label_tag }}
+                    {{ form.start_date }}
+                    <div class="text-danger small">{{ form.start_date.errors }}</div>
+                </div>
+                <div class="col-md-3">
+                    {{ form.end_date.label_tag }}
+                    {{ form.end_date }}
+                    <div class="text-danger small">{{ form.end_date.errors }}</div>
+                </div>
+                <div class="col-md-4">
+                    {{ form.group_id.label_tag }}
+                    {{ form.group_id }}
+                    <div class="text-danger small">{{ form.non_field_errors }}</div>
+                </div>
+                <div class="col-md-2 align-self-end">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Renderizado de gráficas -->
+    <div class="row g-4">
+
+        <!-- Gráfica de actividad de simulaciones -->
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white pt-3 pb-2">
+                    <h5 class="card-title mb-1">Tendencia de uso del simulador</h5>
+                    <p class="card-text small text-muted">Muestra el volumen histórico de cálculos matemáticos de simulación ejecutados por los estudiantes.</p>
+                </div>
+                <div class="card-body text-center p-4">
+                    {{ chart_activity|default:"<p class='text-muted my-5'><i class='fas fa-chart-line fa-2x mb-3'></i><br>No hay datos de actividad disponibles.</p>"|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfica de morfología de simulaciones -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-4">
+                    {{ chart_morphology|default:"<p class='text-muted my-5'>No hay datos morfológicos disponibles.</p>"|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfica de volumen de experimentos -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-4">
+                    {{ chart_volume|default:"<p class='text-muted my-5'>No hay experimentos registrados en este periodo.</p>"|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfica de crecimiento del catálogo -->
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white pt-3 pb-2">
+                    <h5 class="card-title mb-1">Crecimiento del catálogo científico</h5>
+                    <p class="card-text small text-muted">Muestra el volumen de nuevas nebulosas de referencia documentadas en el sistema por día.</p>
+                </div>
+                <div class="card-body text-center p-2">
+                    {{ chart_catalog|default:"<p class='text-muted my-5'>No hay referencias científicas registradas en este periodo.</p>"|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

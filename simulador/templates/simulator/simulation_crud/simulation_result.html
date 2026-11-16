@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Resultados de simulación | ISW-Lab{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="text-primary"><i class="fas fa-space-shuttle"></i> Resultados de simulación</h2>
+                    <p class="text-muted mb-0">Modelo cinemático renderizado a partir de la configuración seleccionada.</p>
+                </div>
+                <div>
+                    <!-- Botón para editar parámetros sin salir del flujo de simulación -->
+                    <a href="{% url 'simulation_configuration_update_view' configuration.pk %}?next={% url 'process_simulation' configuration.pk %}" class="btn btn-warning shadow-sm">
+                        <i class="fas fa-sliders-h"></i> Ajustar parámetros y re-simular
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de información técnica (Datos del historial FN.4) -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-left-primary">
+                    <div class="card-body">
+                        <h6 class="text-uppercase text-muted fw-bold mb-1">Configuración</h6>
+                        <span class="fs-5">{{ configuration.configuration_name }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-left-warning">
+                    <div class="card-body">
+                        <h6 class="text-uppercase text-muted fw-bold mb-1">Morfología</h6>
+                        <!-- Extrae la etiqueta legible del tipo morfológico -->
+                        <span class="fs-5 text-dark">{{ configuration.get_morphological_type_display }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-left-success">
+                    <div class="card-body">
+                        <h6 class="text-uppercase text-muted fw-bold mb-1">Tiempo de ejecución</h6>
+                        <span class="fs-5">{{ history.execution_time_sec }} seg</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-left-info">
+                    <div class="card-body">
+                        <h6 class="text-uppercase text-muted fw-bold mb-1">Estado</h6>
+                        <span class="badge bg-success fs-6">{{ history.get_stability_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor del render 3D -->
+        <div class="card shadow mb-4">
+            <div class="card-body p-0">
+                {% if plot_html %}
+                    <!-- Renderiza el HTML de Plotly de forma segura -->
+                    {{ plot_html|safe }}
+                {% else %}
+                    <div class="alert alert-danger m-4" role="alert">
+                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> La simulación divergió</h5>
+                        <p>El motor matemático detuvo la ejecución para evitar la caída del servidor.</p>
+                        <hr>
+                        <!-- Imprime el error exacto que atrapó el backend -->
+                        <p class="mb-0"><strong>Detalle técnico:</strong> {{ history.student_notes }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if graphs_2d %}
+            <div class="card shadow mb-4 bg-dark border-secondary">
+                <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-white"><i class="fas fa-chart-line text-info"></i> Análisis Físico Bidimensional</h5>
+                    
+                    <!-- Controles interactivos agrupados y alineados a la derecha -->
+                    <div class="d-flex align-items-center gap-3">
+                        
+                        <!-- Switch Logarítmico (Toggle de Bootstrap para alternar la escala visual) -->
+                        <div class="form-check form-switch text-white">
+                            <!-- El atributo 'onchange' dispara la función JS automáticamente al activarlo/desactivarlo -->
+                            <input class="form-check-input" type="checkbox" id="logScaleSwitch" onchange="switchGraph()">
+                            <label class="form-check-label" for="logScaleSwitch">Escala Log</label>
+                        </div>
+
+                        <!-- Selector principal de Variables Físicas -->
+                        <select id="graphSelector" class="form-select bg-dark text-white border-secondary w-auto" onchange="switchGraph()">
+                            <option value="temp">Temperatura vs. Tiempo</option>
+                            <option value="density">Densidad vs. Tiempo</option>
+                            <option value="velocity">Velocidad vs. Tiempo</option>
+                            <option value="radius">Radio vs. Tiempo</option>
+                            <option value="mass">Pérdida de Masa vs. Tiempo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="card-body text-center p-3">
+                    <!-- CONTENEDORES LINEALES -->
+                    <!-- Renderizan las imágenes base64 inyectadas desde el sub-diccionario 'linear' de Python -->
+                    <!-- 'safe' evita que Django escape los caracteres HTML, permitiendo que la etiqueta <img> funcione -->
+                    <div id="graph-linear-temp" class="graph-container">{{ graphs_2d.linear.temp|safe }}</div>
+                    <div id="graph-linear-density" class="graph-container" style="display: none;">{{ graphs_2d.linear.density|safe }}</div>
+                    <div id="graph-linear-velocity" class="graph-container" style="display: none;">{{ graphs_2d.linear.velocity|safe }}</div>
+                    <div id="graph-linear-radius" class="graph-container" style="display: none;">{{ graphs_2d.linear.radius|safe }}</div>
+                    <div id="graph-linear-mass" class="graph-container" style="display: none;">{{ graphs_2d.linear.mass|safe }}</div>
+
+                    <!-- CONTENEDORES LOGARÍTMICOS -->
+                    <!-- Renderizan las imágenes base64 inyectadas desde el sub-diccionario 'log' de Python -->
+                    <div id="graph-log-temp" class="graph-container" style="display: none;">{{ graphs_2d.log.temp|safe }}</div>
+                    <div id="graph-log-density" class="graph-container" style="display: none;">{{ graphs_2d.log.density|safe }}</div>
+                    <div id="graph-log-velocity" class="graph-container" style="display: none;">{{ graphs_2d.log.velocity|safe }}</div>
+                    <div id="graph-log-radius" class="graph-container" style="display: none;">{{ graphs_2d.log.radius|safe }}</div>
+                    <div id="graph-log-mass" class="graph-container" style="display: none;">{{ graphs_2d.log.mass|safe }}</div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="text-center mb-5">
+            <a href="{% url 'simulation_history' %}" class="btn btn-primary px-4">Ir a mi bitácora (Historial)</a>
+        </div>
+    </div>
+</section>
+
+<!-- Script para alternar las gráficas sin recargar el servidor -->
+<script>
+    function switchGraph() {
+        document.querySelectorAll('.graph-container').forEach(el => el.style.display = 'none');
+        const selectedValue = document.getElementById('graphSelector').value;
+        document.getElementById('graph-' + selectedValue).style.display = 'block';
+    }
+
+    function switchGraph() {
+        // 1. Oculta absolutamente todas las gráficas (Limpieza de lienzo en el DOM)
+        document.querySelectorAll('.graph-container').forEach(el => el.style.display = 'none');
+        
+        // 2. Lee el estado en tiempo real de los dos controles (Variable a visualizar y el estado booleano de la escala)
+        const selectedValue = document.getElementById('graphSelector').value;
+        const isLog = document.getElementById('logScaleSwitch').checked;
+        
+        // 3. Concatena los valores para construir dinámicamente el ID exacto que coincide con los contenedores HTML
+        // Ejemplo: Si el switch isLog es verdadero y selectedValue es 'density', el string resultante es 'graph-log-density'
+        const scalePrefix = isLog ? 'log' : 'linear';
+        const targetId = 'graph-' + scalePrefix + '-' + selectedValue;
+        
+        // 4. Ubica el contenedor con ese ID concatenado y cambia su estilo CSS a 'block' para hacerlo visible
+        document.getElementById(targetId).style.display = 'block';
+    }
+</script>
+{% endblock %}
