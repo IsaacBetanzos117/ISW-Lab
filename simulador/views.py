@@ -167,23 +167,6 @@ class SimulationConfigurationDeleteView(LoginRequiredMixin, DeleteView):
 
 
 
-'''
-# FN.3: Menú principal (Escenarios base)
-# TODO: ACLARAR ESTA CLASE POR QUE NO SE SI SEA NECESARIO, IGUAL CON SU TEMPLATE, YA QUE EL DASHBOARD PUEDE SER LA LISTA DE CONFIGURACIONES DEL USUARIO, Y EL BOTON DE CREAR NUEVA CONFIGURACION PUEDE ESTAR AHI. 
-# Esta clase despliega el menú inicial de solo lectura donde el estudiante elige la meta morfológica a replicar.
-class BaseScenariosListView(LoginRequiredMixin, ListView):
-    model = Simulation_configuration
-    template_name = 'simulator/parameters_crud/base_scenarios_menu.html'
-    context_object_name = 'escenarios_base'
-    
-    # Esta funcion verifica que solo sea un usuario Docente/Divulgador
-    def get_queryset(self):
-        # Filtra la tabla extrayendo únicamente los registros calibrados por el Docente
-        return Simulation_configuration.objects.filter(author__groups__name='Docente/Divulgador')
-'''
-
-
-
 # FN.4 y FN.11. Ejecutar simulación, renderizado 3D y notificación
 class ProcessSimulationView(LoginRequiredMixin, View):
     

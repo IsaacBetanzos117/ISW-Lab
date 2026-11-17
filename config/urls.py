@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import handler500
 
+# Declaración explícita del manejador de errores 500 nativo de Django
+handler500 = 'django.views.defaults.server_error'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),

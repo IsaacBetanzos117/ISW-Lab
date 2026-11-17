@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Iniciar Sesión - ISW-Lab{% endblock %}
+{% block title %}Iniciar sesión - ISW-Lab{% endblock %}
 {% block content %}
 <div style="max-width: 400px; margin: 40px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
     <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">
@@ -36,8 +36,19 @@
     </form>
 
     <div style="text-align: center; margin-top: 20px;">
-        <a href="{% url 'password_reset' %}" style="color: var(--secondary-color); text-decoration: none; font-size: 0.9em; transition: color 0.3s;">
-            <i class="fa-solid fa-key"></i> ¿Olvidaste tu contraseña?
+        <!-- Enlace de recuperación -->
+        <div style="margin-bottom: 15px;">
+            <a href="{% url 'password_reset' %}" style="color: var(--secondary-color); text-decoration: none; font-size: 0.9em; transition: color 0.3s;">
+                <i class="fa-solid fa-key"></i> ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 15px 0;">
+        
+        <!-- Botón de registro -->
+        <p style="color: var(--text-color); font-size: 0.9em; margin-bottom: 10px;">¿Aún no tienes una cuenta?</p>
+        <a href="{% url 'create_user' %}" style="color: var(--primary-color); text-decoration: none; font-weight: bold; transition: color 0.3s;">
+            <i class="fa-solid fa-user-plus"></i> Regístrate como estudiante
         </a>
     </div>
 </div>
