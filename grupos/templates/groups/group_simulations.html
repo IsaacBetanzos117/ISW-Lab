@@ -9,8 +9,8 @@
                 <p class="text-muted">Resultados y descargas de las simulaciones de todos tus alumnos.</p>
             </div>
             <div class="col text-end">
-                <a href="javascript:history.back()" class="btn btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i> Regresar a la clase
+                <a href="{% url 'group_detail' group.pk %}" class="btn btn-secondary shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Regresar a la clase.
                 </a>
             </div>
         </div>
