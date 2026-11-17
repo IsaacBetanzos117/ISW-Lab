@@ -1,10 +1,52 @@
-¡Hola, {{ user.username }}!
-
-Nos complace darte la bienvenida al simulador ISW-Lab. Estamos encantados de que te hayas unido a nuestra comunidad y esperamos que disfrutes de la experiencia.
-
-Disfruta explorando y aprendiendo con ISW-Lab. ¡Bienvenido a bordo!
-
-Si necesitas ayuda o tienes alguna pregunta, no dudes en ponerte en contacto con nuestro equipo de soporte, brio231179@upemor.edu.mx. Estamos aquí para ayudarte en cada paso del camino.
-
-Atentamente,
-El equipo de ISW-Lab
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header { background-color: #0b132b; color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 4px solid #1d70b8; }
+        .header h1 { margin: 0; font-size: 26px; letter-spacing: 1px; }
+        .content { padding: 30px 40px; color: #333333; line-height: 1.6; }
+        .content h2 { color: #0b132b; font-size: 22px; margin-top: 0; }
+        .footer { background-color: #f4f7f6; color: #777777; text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #eeeeee; }
+        .btn { display: inline-block; background-color: #1d70b8; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+        .highlight { color: #1d70b8; font-weight: bold; text-decoration: none; }
+        .list-item { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Bienvenido a ISW-Lab</h1>
+        </div>
+        <div class="content">
+            <h2>¡Hola, {{ user.username }}!</h2>
+            
+            <p>Nos emociona darte la bienvenida al <strong>Simulador Astrofísico ISW-Lab</strong>. Tu cuenta ha sido creada exitosamente y ya formas parte de nuestra comunidad.</p>
+            
+            <p>A partir de este momento, tienes acceso a un entorno virtual diseñado para la experimentación. En nuestra plataforma podrás:</p>
+            <ul>
+                <li class="list-item">Configurar parámetros físicos y morfológicos de nebulosas planetarias.</li>
+                <li class="list-item">Visualizar modelos tridimensionales (3D) de la evolución estelar.</li>
+                <li class="list-item">Generar y exportar reportes analíticos de tus simulaciones.</li>
+            </ul>
+            
+            <div style="text-align: center;">
+                <!-- Nota: En un entorno de producción real, cambiarías este enlace por el dominio final -->
+                <a href="http://127.0.0.1:8000/simulador" class="btn" style="color: #ffffff !important; text-decoration: none;">Acceder al Simulador</a>
+            </div>
+            
+            <p>Si necesitas asistencia técnica, reportar algún error o tienes preguntas sobre la plataforma, nuestro equipo de soporte está listo para apoyarte en <a href="mailto:brio231179@upemor.edu.mx" class="highlight">brio231179@upemor.edu.mx</a>.</p>
+            
+            <p>¡Disfruta tu viaje por el cosmos y feliz aprendizaje!</p>
+            
+            <p>Atentamente,<br><strong>El equipo de desarrollo de ISW-Lab</strong></p>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} ISW-Lab - Universidad Politécnica del Estado de Morelos (UPEMOR).</p>
+            <p>Este es un mensaje automático del sistema, por favor no respondas directamente a esta dirección.</p>
+        </div>
+    </div>
+</body>
+</html>

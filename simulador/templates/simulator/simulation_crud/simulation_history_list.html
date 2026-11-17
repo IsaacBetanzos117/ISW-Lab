@@ -4,28 +4,56 @@
 {% block content %}
 <section>
     <div class="container mt-4">
-        <div class="row mb-3 align-items-center">
-            <div class="col">
-                <h2 class="text-primary"><i class="fas fa-history"></i> Mi bitácora de resultados</h2>
-                <p class="text-muted">Historial de experimentos iterados.</p>
+        <div class="row align-items-center mb-3">
+            <div class="col-md-6">
+                <h2 class="text-primary mb-1"><i class="fas fa-history"></i> Mi bitácora de resultados.</h2>
+                <p class="text-muted mb-0">Historial de experimentos iterados.</p>
             </div>
-            <div class="col text-end">
-                <!-- Botón dinámico para volver a la clase -->
+
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
                 {% if my_group %}
                     <a href="{% url 'group_detail' my_group.pk %}" class="btn btn-secondary me-2">
-                        <i class="fa-solid fa-arrow-left"></i> Volver a la clase
+                        <i class="fa-solid fa-arrow-left"></i> Volver a la clase.
                     </a>
                 {% else %}
                     <a href="{% url 'group_list' %}" class="btn btn-secondary me-2">
-                        <i class="fa-solid fa-arrow-left"></i> Volver a mis clases
+                        <i class="fa-solid fa-arrow-left"></i> Volver a mis clases.
                     </a>
                 {% endif %}
-
-                <!-- Botón para regresar a crear o editar los parametros -->
                 <a href="{% url 'config_list' %}" class="btn btn-outline-primary">
-                    <i class="fas fa-sliders-h"></i> Ir a mis parámetros
+                    <i class="fas fa-sliders-h"></i> Ir a mis parámetros.
                 </a>
             </div>
+        </div>
+
+        <!-- Filtros y ordenamiento -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-2 rounded border mb-3">
+            
+            <!-- Filtro de estado -->
+            <div class="mb-2 mb-md-0">
+                <span class="fw-bold me-2 ms-1 align-middle text-dark"><i class="fa-solid fa-filter text-muted"></i> Estado:</span>
+                <a href="?estado=&orden={{ current_order }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-outline-primary{% endif %} m-1">
+                    Todos.
+                </a>
+                <a href="?estado=estable&orden={{ current_order }}" class="btn btn-sm {% if current_status == 'estable' %}btn-success{% else %}btn-outline-success{% endif %} m-1">
+                    <i class="fa-solid fa-check"></i> Estable.
+                </a>
+                <a href="?estado=divergente&orden={{ current_order }}" class="btn btn-sm {% if current_status == 'divergente' %}btn-danger{% else %}btn-outline-danger{% endif %} m-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Divergente.
+                </a>
+            </div>
+
+            <!-- Ordenamiento por fecha -->
+            <div>
+                <span class="fw-bold me-2 align-middle text-dark"><i class="fa-solid fa-calendar-day text-muted"></i> Fecha:</span>
+                <a href="?estado={{ current_status }}&orden=desc" class="btn btn-sm {% if current_order == 'desc' %}btn-secondary{% else %}btn-outline-secondary{% endif %} m-1">
+                    <i class="fa-solid fa-arrow-down-9-1"></i> Más recientes.
+                </a>
+                <a href="?estado={{ current_status }}&orden=asc" class="btn btn-sm {% if current_order == 'asc' %}btn-secondary{% else %}btn-outline-secondary{% endif %} m-1">
+                    <i class="fa-solid fa-arrow-up-1-9"></i> Más antiguos.
+                </a>
+            </div>
+
         </div>
 
         <div class="card shadow">
@@ -33,13 +61,13 @@
                 <table class="table table-hover table-striped mb-0">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID Ejecución</th>
-                            <th>Configuración usada</th>
-                            <th>Morfología</th>
-                            <th>Fecha</th>
-                            <th>Tiempo</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
+                            <th>ID ejecución.</th>
+                            <th>Configuración usada.</th>
+                            <th>Morfología.</th>
+                            <th>Fecha.</th>
+                            <th>Tiempo.</th>
+                            <th>Estado.</th>
+                            <th>Acciones.</th>
                         </tr>
                     </thead>
                     <tbody>

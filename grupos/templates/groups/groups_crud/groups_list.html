@@ -36,31 +36,55 @@
         <table class="table table-bordered table-striped shadow-sm">
             <thead class="table-dark">
                 <tr>
-                    <th>Nombre de la clase</th>
-                    <th>Maestro titular</th>
-                    <th>Total de alumnos</th>
-                    <th>Acciones</th>
+                    <th>ID del grupo.</th>
+                    <th>Nombre de la clase.</th>
+                    <th>Maestro titular.</th>
+                    <th><!-- Total de alumnos. -->Alumnos inscritos</th>
+                    <th>Acciones.</th>
                 </tr>
             </thead>
             <tbody>
                 {% for group in groups %}
                 <tr>
+                    <td>#{{ forloop.counter }}</td>
                     <td class="align-middle"><strong>{{ group.class_name }}</strong></td>
                     <td class="align-middle">{{ group.teacher.username }}</td>
+                    {% comment  %}
                     <td class="align-middle">{{ group.students.count }}</td>
+                    {% endcomment %}
+                    <!-- Cumplimiento FRM: Lista dinámica con límite visual -->
+                    <td class="align-middle">
+                        {% with total_alumnos=group.students.count %}
+                            {% if total_alumnos == 0 %}
+                                <span class="text-muted small">Sin alumnos inscritos</span>
+                            {% else %}
+                                <!-- Muestra únicamente los primeros 3 estudiantes -->
+                                {% for student in group.students.all|slice:":3" %}
+                                    <span class="badge bg-secondary fw-normal mb-1">{{ student.username }}</span>
+                                {% endfor %}
+                                
+                                <!-- Si hay más de 3, calcula el sobrante y muestra el badge indicador -->
+                                {% if total_alumnos > 3 %}
+                                    <span class="badge bg-primary fw-bold mb-1" data-bs-toggle="tooltip" title="Entra al grupo para ver la lista completa">
+                                        +{{ total_alumnos|add:"-3" }} más...
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endwith %}
+                    </td>
                     <td>
                         <div class="btn-group" role="group">
                             <a href="{% url 'group_detail' group.pk %}" class="btn btn-info btn-sm text-white">
                                 <i class="fa-solid fa-door-open"></i> Entrar
                             </a>
 
-                            <!-- Oculta Editar y Eliminar a los estudiantes -->
+                            <!-- Oculta editar y eliminar a los estudiantes -->
                             {% if user.is_superuser or 'Administrador' in user_groups or 'Docente/Divulgador' in user_groups %}
                                 <a href="{% url 'group_update' group.pk %}" class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-users-gear"></i> Editar alumnos
+                                    <i class="fa-solid fa-users-gear"></i> Editar alumnos.
                                 </a>
                                 <a href="{% url 'group_delete' group.pk %}" class="btn btn-danger btn-sm">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                    <i class="fa-solid fa-trash"></i> Eliminar.
                                 </a>
                             {% endif %}
                             

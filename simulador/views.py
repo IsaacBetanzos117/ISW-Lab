@@ -166,6 +166,53 @@ class SimulationConfigurationDeleteView(LoginRequiredMixin, DeleteView):
             return super().form_invalid(form)
 
 
+# FN.3: Catálogo de Parámetros de Simulación del Usuario
+# Esta vista sirve para mostrar los parametros creados para una simulacion
+class SimulationConfigListView(LoginRequiredMixin, ListView):
+    model = Simulation_configuration
+    template_name = 'simulator/parameters_crud/simulation_configuration_list.html'
+    context_object_name = 'configurations'
+    
+    # Permite ver los registros que según el usuario que está haciendo la petición
+    def get_queryset(self):
+        group_id = self.request.session.get('ultimo_grupo_id') # Filtra por autor
+        queryset = Simulation_configuration.objects.filter(author=self.request.user)
+        
+        # Si hay un grupo activo en la sesión, filtra por ese grupo
+        if group_id:
+            queryset = queryset.filter(academic_group_id=group_id)
+        
+        morphological_type = self.request.GET.get('morfologia')
+        
+        if morphological_type:
+            queryset = queryset.filter(morphological_type=morphological_type)
+        
+        return queryset.order_by('-saved_date')
+    
+    # Sirve para pasar variables adicionales a las plantillas (templates)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Mis parámetros de simulación'
+        group_id = self.request.session.get('ultimo_grupo_id') # Recupera el ID del grupo de la sesión del usuario, si existe. Esto permite recordar la última clase visitada y regresar a ella fácilmente.
+        
+        # Busca si el usuario actual está inscrito como estudiante en algún grupo
+        # .first() tomará el primer grupo que encuentre (ideal si solo está en 1 clase)
+        if group_id:
+            # Si hay un ID guardado, cargamos ese grupo exacto
+            context['user_group'] = Academic_group.objects.filter(pk=group_id).first()
+        
+        context['morphological_types'] = [
+            'Esférica',
+            'Elíptica',
+            'Bipolar',
+            'Multipolar',
+            'Proto-planetaria'
+        ]
+        
+        context['current_morphology'] = self.request.GET.get('morfologia', '')
+        
+        return context
+
 
 # FN.4 y FN.11. Ejecutar simulación, renderizado 3D y notificación
 class ProcessSimulationView(LoginRequiredMixin, View):
@@ -230,7 +277,19 @@ class SimulationHistoryListView(LoginRequiredMixin, ListView):
         if group_id:
             queryset = queryset.filter(configuration__academic_group_id=group_id)
             
-        return queryset.order_by('-calculated_at')
+        # Filtro dinámico por estado de ejecución (estable / divergente)
+        status = self.request.GET.get('estado')
+        if status in ['estable', 'divergente']:
+            queryset = queryset.filter(stability_status=status) 
+            
+        # Ordenamiento dinámico por fecha
+        order = self.request.GET.get('orden', 'desc') # Por defecto descendente (más recientes)
+        if order == 'asc':
+            queryset = queryset.order_by('calculated_at') # Más antiguos primero
+        else:
+            queryset = queryset.order_by('-calculated_at') # Más recientes primero
+        
+        return queryset
     
     # Sirve para pasar variables adicionales a las plantillas
     def get_context_data(self, **kwargs):
@@ -242,37 +301,8 @@ class SimulationHistoryListView(LoginRequiredMixin, ListView):
         if group_id:
             context['my_group'] = Academic_group.objects.filter(pk=group_id).first()
         
-        return context
-
-# FN.3: Catálogo de Parámetros de Simulación del Usuario
-# Esta vista sirve para mostrar los parametros creados para una simulacion
-class SimulationConfigListView(LoginRequiredMixin, ListView):
-    model = Simulation_configuration
-    template_name = 'simulator/parameters_crud/simulation_configuration_list.html'
-    context_object_name = 'configurations'
-    
-    # Permite ver los registros que según el usuario que está haciendo la petición
-    def get_queryset(self):
-        group_id = self.request.session.get('ultimo_grupo_id') # Filtra por autor
-        queryset = Simulation_configuration.objects.filter(author=self.request.user)
-        
-        # Si hay un grupo activo en la sesión, filtra por ese grupo
-        if group_id:
-            queryset = queryset.filter(academic_group_id=group_id)
-        
-        return queryset.order_by('-saved_date')
-    
-    # Sirve para pasar variables adicionales a las plantillas (templates)
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Mis parámetros de simulación'
-        group_id = self.request.session.get('ultimo_grupo_id') # Recupera el ID del grupo de la sesión del usuario, si existe. Esto permite recordar la última clase visitada y regresar a ella fácilmente.
-        
-        # Busca si el usuario actual está inscrito como estudiante en algún grupo
-        # .first() tomará el primer grupo que encuentre (ideal si solo está en 1 clase)
-        if group_id:
-            # Si hay un ID guardado, cargamos ese grupo exacto
-            context['user_group'] = Academic_group.objects.filter(pk=group_id).first()
+        context['current_status'] = self.request.GET.get('estado', '')
+        context['current_order'] = self.request.GET.get('orden', 'desc')
         
         return context
 

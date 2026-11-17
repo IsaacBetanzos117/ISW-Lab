@@ -1,10 +1,21 @@
+==================================================
+ 🚀 BIENVENIDO AL SIMULADOR ISW-LAB
+==================================================
+
 ¡Hola, {{ user.username }}!
 
-Nos complace darte la bienvenida al simulador ISW-Lab. Estamos encantados de que te hayas unido a nuestra comunidad y esperamos que disfrutes de la experiencia.
+Nos emociona darte la bienvenida al Simulador Astrofísico ISW-Lab. Tu cuenta ha sido creada exitosamente.
 
-Disfruta explorando y aprendiendo con ISW-Lab. ¡Bienvenido a bordo!
+A partir de este momento, tienes acceso a un entorno virtual diseñado para la experimentación, donde podrás configurar parámetros físicos, visualizar modelos 3D y analizar la evolución de nebulosas planetarias.
 
-Si necesitas ayuda o tienes alguna pregunta, no dudes en ponerte en contacto con nuestro equipo de soporte, brio231179@upemor.edu.mx. Estamos aquí para ayudarte en cada paso del camino.
+¿QUÉ SIGUE?
+Inicia sesión en la plataforma para comenzar a explorar los diferentes escenarios astrofísicos.
+
+¿NECESITAS AYUDA?
+Si requieres asistencia técnica, reportar un error o tienes alguna pregunta, nuestro equipo de soporte está listo para apoyarte. Escríbenos a: brio231179@upemor.edu.mx
+
+¡Disfruta tu viaje por el cosmos y feliz aprendizaje!
 
 Atentamente,
-El equipo de ISW-Lab
+El equipo de desarrollo de ISW-Lab
+Universidad Politécnica del Estado de Morelos (UPEMOR)

@@ -9,10 +9,6 @@ from .models import Academic_group
 from .forms import AcademicGroupForm
 from django.shortcuts import get_object_or_404
 
-# TODO: PROVOCAR ERROR 404, cambiar a produccion
-
-
-
 # Esta clase se encargada de mostrar la lista de grupos académicos, los docentes ven solo sus grupos; los administradores ven todos.
 # Los estudiantes no tienen acceso a esta vista administrativa.
 class AcademicGroupListView(LoginRequiredMixin, ListView):
@@ -34,6 +30,9 @@ class AcademicGroupListView(LoginRequiredMixin, ListView):
                 queryset = Academic_group.objects.filter(teacher=self.request.user)
             else: # Si no es admin ni docente, es estudiante.
                 queryset = Academic_group.objects.filter(students=self.request.user)
+            
+            # Indica a Django que traiga al profesor (select_related) y a los alumnos (prefetch_related) en una sola pasada.
+            queryset = queryset.select_related('teacher').prefetch_related('students')
             
             # Filtro de búsqueda dinámica (Nombre del grupo o username del docente)
             if query:
@@ -128,19 +127,44 @@ class GroupSimulationListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
     
     # Este método determina si el usuario tiene permiso para ver la lista de simulaciones del grupo académico.
     def test_func(self):
-        grupo = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
+        group = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
         is_admin = self.request.user.groups.filter(name='Administrador').exists()
-        is_teacher = self.request.user == grupo.teacher
+        is_teacher = self.request.user == group.teacher
         return is_admin or is_teacher
     
     # Este método sobrescribe la consulta por defecto para filtrar el historial de simulaciones y traer solo las simulaciones de los alumnos del grupo académico específico.
     def get_queryset(self):
-        grupo = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
+        group = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
         
-        # Filtra el historial para traer solo las simulaciones de los alumnos de esta clase
-        return Simulation_history.objects.filter(
-            configuration__author__in=grupo.students.all()
-        ).order_by('-calculated_at')
+        # Filtra explícitamente por el grupo donde se guardó la configuración.
+        # select_related precarga los datos del autor y la configuración para evitar el problema N+1.
+        queryset = Simulation_history.objects.filter(
+            configuration__academic_group=group
+        ).select_related('configuration', 'configuration__author')
+        
+        # Filtro dinámico por estado de ejecución.
+        status = self.request.GET.get('estado')
+        if status in ['estable', 'divergente']:
+            queryset = queryset.filter(stability_status=status)
+            
+        # Ordenamiento dinámico por fecha.
+        order = self.request.GET.get('orden', 'desc')
+        if order == 'asc':
+            queryset = queryset.order_by('calculated_at')
+        else:
+            queryset = queryset.order_by('-calculated_at')
+            
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Enviamos las variables actuales a la plantilla para la interfaz visual
+        context['current_status'] = self.request.GET.get('estado', '')
+        context['current_order'] = self.request.GET.get('orden', 'desc')
+        # Pasamos el objeto 'group' por si lo necesitas en el título o para el botón de regreso
+        context['group'] = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
+        
+        return context
 
 
 # Esta clase se encargada de mostrar los detalles de un grupo académico específico, incluyendo su nombre, docente y lista de estudiantes.

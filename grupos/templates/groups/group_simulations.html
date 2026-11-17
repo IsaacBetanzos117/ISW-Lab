@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Auditoría del Grupo{% endblock %}
+{% block title %}Auditoría del grupo{% endblock %}
 {% block content %}
 <section>
     <div class="container mt-4">
@@ -13,6 +13,40 @@
                     <i class="fa-solid fa-arrow-left"></i> Regresar a la clase
                 </a>
             </div>
+        </div>
+
+        <!-- Filtros y ordenamiento -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-2 rounded border mb-3 shadow-sm">
+            
+            <!-- Filtro de estado -->
+            <div class="mb-2 mb-md-0">
+                <span class="fw-bold me-2 ms-1 align-middle text-dark">
+                    <i class="fa-solid fa-filter text-muted"></i> Estado:
+                </span>
+                <a href="?estado=&orden={{ current_order }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-outline-primary{% endif %} m-1">
+                    Todos.
+                </a>
+                <a href="?estado=estable&orden={{ current_order }}" class="btn btn-sm {% if current_status == 'estable' %}btn-success{% else %}btn-outline-success{% endif %} m-1">
+                    <i class="fa-solid fa-check"></i> Estable.
+                </a>
+                <a href="?estado=divergente&orden={{ current_order }}" class="btn btn-sm {% if current_status == 'divergente' %}btn-danger{% else %}btn-outline-danger{% endif %} m-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Divergente.
+                </a>
+            </div>
+
+            <!-- Ordenamiento por fecha -->
+            <div>
+                <span class="fw-bold me-2 align-middle text-dark">
+                    <i class="fa-solid fa-calendar-day text-muted"></i> Fecha:
+                </span>
+                <a href="?estado={{ current_status }}&orden=desc" class="btn btn-sm {% if current_order == 'desc' %}btn-secondary{% else %}btn-outline-secondary{% endif %} m-1">
+                    <i class="fa-solid fa-arrow-down-9-1"></i> Más recientes.
+                </a>
+                <a href="?estado={{ current_status }}&orden=asc" class="btn btn-sm {% if current_order == 'asc' %}btn-secondary{% else %}btn-outline-secondary{% endif %} m-1">
+                    <i class="fa-solid fa-arrow-up-1-9"></i> Más antiguos.
+                </a>
+            </div>
+
         </div>
 
         <div class="card shadow">
