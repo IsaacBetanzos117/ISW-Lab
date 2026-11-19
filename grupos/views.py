@@ -57,6 +57,7 @@ class AcademicGroupCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
         try:
             is_teacher = self.request.user.groups.filter(name='Docente/Divulgador').exists()
             is_admin = self.request.user.groups.filter(name='Administrador').exists()
+            
             return is_teacher or is_admin
         except Exception:
             raise Http404("Error al verificar los permisos de creación.")
@@ -83,6 +84,7 @@ class AcademicGroupUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
         try:
             grupo = self.get_object()
             is_admin = self.request.user.groups.filter(name='Administrador').exists()
+            
             return self.request.user == grupo.teacher or is_admin
         except Exception:
             # Si el grupo no existe o falla la consulta, muestra la página 404
@@ -92,6 +94,7 @@ class AcademicGroupUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
     def form_valid(self, form):
         try:
             messages.success(self.request, "Lista de estudiantes y datos del grupo actualizados.")
+            
             return super().form_valid(form)
         except Exception:
             raise Http404("Ocurrió un error al intentar actualizar el grupo.")
@@ -107,6 +110,7 @@ class AcademicGroupDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteVie
         try:
             grupo = self.get_object()
             is_admin = self.request.user.groups.filter(name='Administrador').exists()
+            
             return self.request.user == grupo.teacher or is_admin
         except Exception:
             raise Http404("El grupo no existe o no tienes permisos para eliminarlo.")
@@ -115,6 +119,7 @@ class AcademicGroupDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteVie
     def form_valid(self, form):
         try:
             messages.success(self.request, "Grupo académico eliminado exitosamente.")
+            
             return super().form_valid(form)
         except Exception:
             raise Http404("Error al intentar eliminar el grupo.")
@@ -130,6 +135,7 @@ class GroupSimulationListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
         group = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
         is_admin = self.request.user.groups.filter(name='Administrador').exists()
         is_teacher = self.request.user == group.teacher
+        
         return is_admin or is_teacher
     
     # Este método sobrescribe la consulta por defecto para filtrar el historial de simulaciones y traer solo las simulaciones de los alumnos del grupo académico específico.
@@ -156,13 +162,14 @@ class GroupSimulationListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
             
         return queryset
     
+    # Este método sobrescribe el contexto de la vista para una busqueda dinamica de grupos.
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Enviamos las variables actuales a la plantilla para la interfaz visual
+        
+        # Envia las variables actuales a la plantilla para la interfaz visual
         context['current_status'] = self.request.GET.get('estado', '')
         context['current_order'] = self.request.GET.get('orden', 'desc')
-        # Pasamos el objeto 'group' por si lo necesitas en el título o para el botón de regreso
-        context['group'] = get_object_or_404(Academic_group, pk=self.kwargs['pk'])
+        context['group'] = get_object_or_404(Academic_group, pk=self.kwargs['pk']) # Pasa el objeto 'group' por si lo necesitas en el título o para el botón de regreso
         
         return context
 
@@ -188,6 +195,6 @@ class AcademicGroupDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailVie
     # Este método sobrescribe el contexto de la vista para guardar el ID del grupo en la sesión del usuario, lo que permite recordar la última clase visitada.
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Guarda el ID exacto de la clase en la sesión del usuario
-        self.request.session['ultimo_grupo_id'] = self.object.pk
+        self.request.session['ultimo_grupo_id'] = self.object.pk # Guarda el ID exacto de la clase en la sesión del usuario
+        
         return context

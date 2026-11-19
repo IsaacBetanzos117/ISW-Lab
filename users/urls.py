@@ -1,5 +1,5 @@
 from django.urls import path
-from users.views import UserListView, UserCreateView, UserProfileView, UserUpdateView, UserDeleteView, UserLoginView
+from users.views import MarkNotificationsReadView, UserListView, UserCreateView, UserProfileView, UserUpdateView, UserDeleteView, UserLoginView
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
 
@@ -22,4 +22,5 @@ urlpatterns = [
     
     # URL dedicada para el perfil (sin <int:pk>)
     path('mi-perfil/', UserProfileView.as_view(), name='my_profile'),
+    path('notificaciones/leer/', MarkNotificationsReadView.as_view(), name='mark_notifications_read')
 ]

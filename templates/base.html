@@ -29,40 +29,70 @@
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'simulation_history' %}">
-                                <i class="fa-solid fa-flask"></i> Mis simulaciones
+                                <i class="fa-solid fa-flask"></i> Mis simulaciones.
                             </a>
                         </li>
 
-                        <!-- Si el usuario es administrador, mostramos enlace al CRUD de usuarios -->
+                        <!-- Si el usuario es administrador, muestra el enlace al CRUD de usuarios campanita -->
                         {% if user.is_superuser or 'Administrador' in user.groups.all.values_list|join:',' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'user_list' %}">
-                                <i class="fa-solid fa-users-gear"></i> Gestión de usuarios
+                                <i class="fa-solid fa-users-gear"></i> Gestión de usuarios.
                             </a>
                         </li>
+
+                        <!-- Campanita de notificaciones -->
+                        <li class="nav-item dropdown ms-2">
+                            <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificaciones de sistema">
+                                <i class="fa-solid fa-bell fa-lg"></i>
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ unread_notifications_count }}
+                                        <span class="visually-hidden">notificaciones sin leer.</span>
+                                    </span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notifDropdown" style="min-width: 320px;">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <strong>Notificaciones</strong>
+                                    {% if unread_notifications_count > 0 %}
+                                        <a href="{% url 'mark_notifications_read' %}" class="small text-decoration-none">Marcar como leídas.</a>
+                                    {% endif %}
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% for notif in admin_notifications %}
+                                    <li class="px-3 py-2 small border-bottom">
+                                        <i class="fa-solid fa-user-plus text-success me-1"></i> {{ notif.message }}
+                                        <div class="text-muted" style="font-size: 0.75rem;">{{ notif.created_at }}</div>
+                                    </li>
+                                {% empty %}
+                                    <li class="px-3 py-2 text-muted small text-center">No hay notificaciones nuevas.</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
                         {% endif %}
+                        
                         <li class="nav-item dropdown ms-3">
                             <a class="btn btn-outline-light dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-user-astronaut"></i> {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 
-                                <!-- NUEVO: Botón de Mi perfil -->
+                                <!-- Botón de Mi perfil -->
                                 <li>
                                     <a class="dropdown-item" href="{% url 'my_profile' %}">
-                                        <i class="fa-solid fa-id-card"></i> Mi perfil
+                                        <i class="fa-solid fa-id-card"></i> Mi perfil.
                                     </a>
                                 </li>
                                 
-                                <!-- Línea divisoria-->
                                 <li><hr class="dropdown-divider"></li>
                                 
-                                <!-- TU CÓDIGO ORIGINAL DE CERRAR SESIÓN -->
+                                <!-- CERRAR SESIÓN -->
                                 <li>
                                     <form method="post" action="{% url 'logout' %}">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión.
                                         </button>
                                     </form>
                                 </li>
@@ -70,7 +100,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{% url 'login' %}">Iniciar sesión</a>
+                            <a class="btn btn-primary" href="{% url 'login' %}">Iniciar sesión.</a>
                         </li>
                     {% endif %}
                 </ul>
