@@ -70,6 +70,20 @@
                 </div>
             {% endif %}
 
+            <!-- RESPALDO Y RECUPERACIÓN DE BD (Solo Admin) -->
+            {% if is_admin %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-left-success bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-database fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Respaldo y recuperación</h5>
+                            <p class="card-text text-muted">Genera copias de seguridad (.sql) y restaura la base de datos ante fallos.</p>
+                            <a href="{% url 'db_maintenance' %}" class="btn btn-success w-100">Administrar BD</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 </section>

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Respaldo y recuperación de BD.{% endblock %}
+{% block content %}
+<section>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">
+                    <i class="fa-solid fa-database text-primary"></i> Respaldo y recuperación de base de datos.
+                </h2>
+                <p class="text-muted mb-0">Genera copias de seguridad completas (.sql) o restaura el sistema ante fallos.</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary shadow-sm">
+                <i class="fa-solid fa-arrow-left"></i> Regresar al Dashboard.
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Tarjeta 1: Generar y descargar respaldo -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100 border-primary">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        <i class="fa-solid fa-download"></i> Generar copia de seguridad.
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <p class="card-text">
+                            Crea un volcado completo (estructura y datos) de toda la base de datos MySQL en formato <code>.sql</code> y descárgalo a tu equipo local.
+                        </p>
+                        <form method="post" action="{% url 'db_backup_download' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fa-solid fa-file-export"></i> Descargar respaldo (.sql)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta 2: Restaurar desde archivo -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100 border-danger">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="fa-solid fa-upload"></i> Restaurar base de datos.
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="alert alert-warning small">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <strong>Advertencia:</strong> Esta acción sobrescribirá las tablas y registros actuales con los datos del archivo seleccionado.
+                        </div>
+                        <form method="post" action="{% url 'db_restore' %}" enctype="multipart/form-data"
+                            onsubmit="return confirm('¿Estás seguro de restaurar la base de datos? Los datos actuales serán reemplazados.');">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="backup_file" class="form-label fw-bold">Seleccionar archivo (.sql)</label>
+                                <input type="file" class="form-control" id="backup_file" name="backup_file" accept=".sql" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fa-solid fa-rotate-left"></i> Restaurar sistema.
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
