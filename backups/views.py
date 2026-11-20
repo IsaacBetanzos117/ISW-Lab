@@ -66,7 +66,7 @@ class DatabaseBackupDownloadView(AdminRequiredMixin, View):
             # Excluye sesiones activas y logs del admin para no cerrar la sesión actual ni inflar el respaldo
             ignored_tables = ['django_session', 'django_admin_log']
             for table in ignored_tables:
-                cmd.append(f"--ignore-table={db['NAME']}.{table}")
+                cmd.append(f"--ignore-table={db['NAME']}.{table}") # --ignore-table= es la bandera oficial de mysqldump para omitir una tabla específica.
             
             cmd.append(db['NAME'])
             
