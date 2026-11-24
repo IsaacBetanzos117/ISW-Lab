@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +22,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)ctij2hpihjo_ys)uwx7430i9*%upu)os))9hj3&**o)x886@t'
+# Clave criptográfica fija de Django (firma sesiones, tokens CSRF, contraseñas temporales, etc.).
+# Al estar escrita directamente en el código, es útil para desarrollo local, pero no debe exponerse en repositorios públicos.
+# SECRET_KEY = 'django-insecure-)ctij2hpihjo_ys)uwx7430i9*%upu)os))9hj3&**o)x886@t'
+
+
+# Clave criptográfica de Django (firma sesiones, tokens CSRF, etc.).
+# En producción (Render) lee la variable de entorno privada 'SECRET_KEY' para no exponerla en GitHub.
+# En local, como esa variable no existe, usa tu clave de respaldo por defecto.
+SECRET_KEY = os.environ.get('SECRET_KEY', 'tu-clave-local-actual')
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Modo de depuración fijo.
+# En True muestra páginas de error detalladas con trazas de código (ideal para programar en local).
+# Antes de pasar a producción, se debe cambiar manualmente a False por seguridad.
+# # DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# Busca una variable de entorno llamada DEBUG. Si no existe, usa 'True' por defecto
+# Modo de depuración.
+# Lee la variable de entorno 'DEBUG' (como texto) y la compara con 'True' para devolver un booleano.
+# En local usa 'True' por defecto para ver errores detallados; en Render se configura como 'False' por seguridad.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.trycloudflare.com', '.onrender.com']
 # 'localhost', '127.0.0.1'
+
+CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com', 'https://*.onrender.com']
 
 # Application definition
 
@@ -47,6 +71,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # intermediario que le permite a Django servir archivos estáticos, cuando esta en modo producción (DEBUG = False).
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,11 +110,17 @@ DATABASES = {
         'NAME': 'isw_lab_bd',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': '127.0.0',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
 
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -125,7 +156,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # Email
