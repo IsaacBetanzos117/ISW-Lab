@@ -6,6 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+import numpy as np
 import pandas as pd # Pandas para manipulación de datos y exportación a Excel
 from grupos.models import Academic_group
 from .physics_engine import SimulationEngine
@@ -627,27 +628,33 @@ class Matplotlib3DRenderer:
         if len(df_plot) > 2500:
             df_plot = df_plot.sample(n=2500, random_state=42)
 
-        # Ordena de menor a mayor densidad para dibujar el núcleo al frente
-        df_plot = df_plot.sort_values(by='Densidad (%)')
+        df_plot = df_plot.sort_values(by='Densidad (%)').copy()
 
-        fig_mpl = plt.figure(figsize=(8, 6), dpi=100, facecolor='#111111')
+        # Micro-ruido para romper la cuadrícula rígida
+        rng = np.random.default_rng(42)
+        span = max(df_plot['Eje X (pc)'].max() - df_plot['Eje X (pc)'].min(), 1e-4)
+        jitter = span * 0.015
+        x = df_plot['Eje X (pc)'].values + rng.normal(0, jitter, len(df_plot))
+        y = df_plot['Eje Y (pc)'].values + rng.normal(0, jitter, len(df_plot))
+        z = df_plot['Eje Z (pc)'].values + rng.normal(0, jitter, len(df_plot))
+        c = df_plot['Densidad (%)'].values
+
+        fig_mpl = plt.figure(figsize=(8, 6), dpi=120, facecolor='#111111')
         ax = fig_mpl.add_subplot(111, projection='3d', facecolor='#111111')
 
-        sc = ax.scatter(
-            df_plot['Eje X (pc)'],
-            df_plot['Eje Y (pc)'],
-            df_plot['Eje Z (pc)'],
-            c=df_plot['Densidad (%)'],
-            cmap='plasma',
-            vmin=5,
-            vmax=100,
-            s=22,
-            alpha=0.8,
-            depthshade=False,  # Evita que Matplotlib oscurezca los puntos
-            edgecolors='none'
+        # Halo gaseoso suave (puntos grandes y translúcidos)
+        ax.scatter(
+            x, y, z, c=c, cmap='plasma', vmin=5, vmax=100,
+            s=90, alpha=0.18, depthshade=False, edgecolors='none'
         )
 
-        cbar = fig_mpl.colorbar(sc, ax=ax, shrink=0.65, pad=0.1)
+        # Núcleo definido
+        sc = ax.scatter(
+            x, y, z, c=c, cmap='plasma', vmin=5, vmax=100,
+            s=18, alpha=0.65, depthshade=False, edgecolors='none'
+        )
+
+        cbar = fig_mpl.colorbar(sc, ax=ax, shrink=0.65, pad=0.08)
         cbar.set_label('Densidad (%)', color='white', fontsize=10)
         cbar.ax.yaxis.set_tick_params(color='white', labelcolor='white')
 
@@ -658,15 +665,16 @@ class Matplotlib3DRenderer:
         ax.xaxis.pane.fill = False
         ax.yaxis.pane.fill = False
         ax.zaxis.pane.fill = False
-
+        
         # Atenúa la rejilla del cubo para que destaque la nebulosa
-        ax.xaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
-        ax.yaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
-        ax.zaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
+        ax.xaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.35)
+        ax.yaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.35)
+        ax.zaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.35)
         ax.set_title(f'Simulation: {title}', color='white', fontsize=12)
 
         buf = io.BytesIO()
-        fig_mpl.savefig(buf, format='png', facecolor='#111111')
+        fig_mpl.savefig(buf, format='png', facecolor='#111111', bbox_inches='tight')
         plt.close(fig_mpl)
         buf.seek(0)
+        
         return Image.open(buf).convert('RGB')
