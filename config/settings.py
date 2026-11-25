@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'anymail',
     'simulador',
     'users',
     'catalog',
@@ -184,18 +185,26 @@ LOGOUT_REDIRECT_URL = 'login'
 # Simula el envío de correos imprimiéndolos en la consola de la terminal
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# TODO:Configuración para envío de correos reales (SMTP Gmail), quitar comentarios al final.
+# TODO: Configuración para envío de correos reales (SMTP Gmail), quitar comentarios al final.
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'brio231179@upemor.edu.mx'
-EMAIL_HOST_PASSWORD = 'xgmtppfmtnejirxx'
+if os.environ.get('BREVO_API_KEY'):
+    # En producción (Render): usa Brevo por API HTTPS con tu correo personal verificado
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+    ANYMAIL = {
+        "BREVO_API_KEY": os.environ.get("BREVO_API_KEY"),
+    }
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Simulador ISW-Lab <isaac24betanzos@gmail.com>") # Esto hace que el correo llegue con un nombre profesional en lugar de solo la dirección
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+else:
+    # En local: sigue usando tu Gmail SMTP institucional actual
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'brio231179@upemor.edu.mx'
+    EMAIL_HOST_PASSWORD = 'xgmtppfmtnejirxx'
+    DEFAULT_FROM_EMAIL = 'Simulador ISW-Lab <brio231179@upemor.edu.mx>' # Esto hace que el correo llegue con un nombre profesional en lugar de solo la dirección
 
-
-# Esto hace que el correo llegue con un nombre profesional en lugar de solo la dirección
-DEFAULT_FROM_EMAIL = 'Simulador ISW-Lab <brio231179@upemor.edu.mx>'
 
 
 # Configuración de tiempo de expiración para el restablecimiento de contraseña FF.4
