@@ -610,6 +610,9 @@ class AsyncTeacherNotification:
 class Matplotlib3DRenderer:
     @staticmethod # Permite llamarla directo con Matplotlib3DRenderer.render(...) sin necesidad de instanciar la clase cada vez.
     def render(df_3d, title="Simulación 3D"):
+        if len(df_3d) > 2500:
+            df_3d = df_3d.sample(n=2500, random_state=42)
+        
         fig_mpl = plt.figure(figsize=(8, 6), dpi=100, facecolor='#111111')
         ax = fig_mpl.add_subplot(111, projection='3d', facecolor='#111111')
 
