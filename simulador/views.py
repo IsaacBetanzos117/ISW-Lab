@@ -19,7 +19,9 @@ import threading # Para manejar la ejecución de tareas en segundo plano
 from django.core.mail import EmailMultiAlternatives # Para enviar correos electrónicos
 from django.conf import settings # Para acceder a la configuración de Django, como el correo electrónico predeterminado
 from django.template.loader import render_to_string # Para renderizar plantillas HTML a cadenas de texto
-from grupos.models import Academic_group
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 # FN.3: Gestión de Parámetros de Simulación (Crear)
 # Esta clase permite al estudiante o docente crear una nueva configuración de simulación desde un formulario vacío.
@@ -366,9 +368,10 @@ class SimulationDownloadView(LoginRequiredMixin, View):
             
         elif file_type in ['png', 'jpg', 'pdf']: # Descarga de imágenes y PDF (Stitching 3D + 2D)
             # Extrae el objeto crudo de Plotly y lo convierte a imagen
-            fig_3d = simulation_result['fig']
-            img_3d_bytes = fig_3d.to_image(format="png", width=800, height=600)
-            img_3d = Image.open(io.BytesIO(img_3d_bytes))
+            img_3d = Matplotlib3DRenderer.render(
+                simulation_result['dataframe'],
+                history_record.configuration.configuration_name
+            )
             
             # Obtiene las gráficas 2D Logarítmicas de Matplotlib
             graphs_log = simulation_result['graphs_2d']['log']
@@ -506,9 +509,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         
         return context
 
-
-
-
 # Define la clase encargada de gestionar, construir y enviar notificaciones por correo con reportes adjuntos
 class AsyncTeacherNotification:
     def __init__(self, student_user, config_name, status, execution_time, simulation_result, id_group=None):
@@ -537,7 +537,10 @@ class AsyncTeacherNotification:
     # Método privado para unir la gráfica 3D y las 2D en un solo archivo PDF y adjuntarlo al correo
     def _attach_pdf(self, email):
         # Exporta la figura 3D de Plotly a PNG en bytes y la abre como imagen de Pillow (PIL)
-        img_3d = Image.open(io.BytesIO(self.simulation_result['fig'].to_image(format='png', width=800, height=600)))        
+        img_3d = Matplotlib3DRenderer.render(
+            self.simulation_result['dataframe'],
+            self.config_name
+        )
         images_2d = [Image.open(io.BytesIO(base64.b64decode(re.search(r'base64,(.*?)"', self.simulation_result['graphs_2d']['log'][k],).group(1)))) for k in ['temp', 'density', 'velocity', 'radius', 'mass']]
 
         # Calcula la altura total del documento sumando la altura de la imagen 3D más todas las imágenes 2D
@@ -602,3 +605,42 @@ class AsyncTeacherNotification:
             email.send(fail_silently=False)
         except Exception as e:
             print(f'Error al enviar correo: {str(e)}')
+
+# Esta vista es para rendedizar las graficas 3D.
+class Matplotlib3DRenderer:
+    @staticmethod # Permite llamarla directo con Matplotlib3DRenderer.render(...) sin necesidad de instanciar la clase cada vez.
+    def render(df_3d, title="Simulación 3D"):
+        fig_mpl = plt.figure(figsize=(8, 6), dpi=100, facecolor='#111111')
+        ax = fig_mpl.add_subplot(111, projection='3d', facecolor='#111111')
+
+        sc = ax.scatter(
+            df_3d['Eje X (pc)'],
+            df_3d['Eje Y (pc)'],
+            df_3d['Eje Z (pc)'],
+            c=df_3d['Densidad (%)'],
+            cmap='plasma',
+            vmin=5,
+            vmax=100,
+            s=12,
+            alpha=0.45,
+            edgecolors='none'
+        )
+
+        cbar = fig_mpl.colorbar(sc, ax=ax, shrink=0.65, pad=0.1)
+        cbar.set_label('Densidad (%)', color='white', fontsize=10)
+        cbar.ax.yaxis.set_tick_params(color='white', labelcolor='white')
+
+        ax.set_xlabel('X (pc)', color='white')
+        ax.set_ylabel('Y (pc)', color='white')
+        ax.set_zlabel('Z (pc)', color='white')
+        ax.tick_params(colors='white', labelsize=8)
+        ax.xaxis.pane.fill = False
+        ax.yaxis.pane.fill = False
+        ax.zaxis.pane.fill = False
+        ax.set_title(f'Simulation: {title}', color='white', fontsize=12)
+
+        buf = io.BytesIO()
+        fig_mpl.savefig(buf, format='png', facecolor='#111111')
+        plt.close(fig_mpl)  # Libera la RAM de inmediato
+        buf.seek(0)
+        return Image.open(buf).convert('RGB')
