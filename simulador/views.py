@@ -624,8 +624,8 @@ class Matplotlib3DRenderer:
             cmap='plasma',
             vmin=5,
             vmax=100,
-            s=12,
-            alpha=0.45,
+            s=20,
+            alpha=0.75,
             edgecolors='none'
         )
 
