@@ -1,3 +1,4 @@
+import os # Automatizar tareas del sistema como manejar archivos, carpetas, rutas y variables de entorno.
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -368,10 +369,15 @@ class SimulationDownloadView(LoginRequiredMixin, View):
             
         elif file_type in ['png', 'jpg', 'pdf']: # Descarga de imágenes y PDF (Stitching 3D + 2D)
             # Extrae el objeto crudo de Plotly y lo convierte a imagen
-            img_3d = Matplotlib3DRenderer.render(
-                simulation_result['dataframe'],
-                history_record.configuration.configuration_name
-            )
+            if os.environ.get('RENDER'):
+                img_3d = Matplotlib3DRenderer.render(
+                    simulation_result['dataframe'],
+                    history_record.configuration.configuration_name
+                )
+            else:
+                fig_3d = simulation_result['fig']
+                img_3d_bytes = fig_3d.to_image(format="png", width=800, height=600)
+                img_3d = Image.open(io.BytesIO(img_3d_bytes))
             
             # Obtiene las gráficas 2D Logarítmicas de Matplotlib
             graphs_log = simulation_result['graphs_2d']['log']
@@ -537,10 +543,13 @@ class AsyncTeacherNotification:
     # Método privado para unir la gráfica 3D y las 2D en un solo archivo PDF y adjuntarlo al correo
     def _attach_pdf(self, email):
         # Exporta la figura 3D de Plotly a PNG en bytes y la abre como imagen de Pillow (PIL)
-        img_3d = Matplotlib3DRenderer.render(
-            self.simulation_result['dataframe'],
-            self.config_name
-        )
+        if os.environ.get('RENDER'):
+            img_3d = Matplotlib3DRenderer.render(
+                self.simulation_result['dataframe'],
+                self.config_name
+            )
+        else:
+            img_3d = Image.open(io.BytesIO(self.simulation_result['fig'].to_image(format='png', width=800, height=600)))
         images_2d = [Image.open(io.BytesIO(base64.b64decode(re.search(r'base64,(.*?)"', self.simulation_result['graphs_2d']['log'][k],).group(1)))) for k in ['temp', 'density', 'velocity', 'radius', 'mass']]
 
         # Calcula la altura total del documento sumando la altura de la imagen 3D más todas las imágenes 2D
@@ -610,22 +619,31 @@ class AsyncTeacherNotification:
 class Matplotlib3DRenderer:
     @staticmethod # Permite llamarla directo con Matplotlib3DRenderer.render(...) sin necesidad de instanciar la clase cada vez.
     def render(df_3d, title="Simulación 3D"):
-        if len(df_3d) > 2500:
-            df_3d = df_3d.sample(n=2500, random_state=42)
-        
+        # Filtra el halo muy tenue (<15%) para que no tape el núcleo brillante
+        df_plot = df_3d[df_3d['Densidad (%)'] >= 15]
+        if len(df_plot) < 500:
+            df_plot = df_3d
+
+        if len(df_plot) > 2500:
+            df_plot = df_plot.sample(n=2500, random_state=42)
+
+        # Ordena de menor a mayor densidad para dibujar el núcleo al frente
+        df_plot = df_plot.sort_values(by='Densidad (%)')
+
         fig_mpl = plt.figure(figsize=(8, 6), dpi=100, facecolor='#111111')
         ax = fig_mpl.add_subplot(111, projection='3d', facecolor='#111111')
 
         sc = ax.scatter(
-            df_3d['Eje X (pc)'],
-            df_3d['Eje Y (pc)'],
-            df_3d['Eje Z (pc)'],
-            c=df_3d['Densidad (%)'],
+            df_plot['Eje X (pc)'],
+            df_plot['Eje Y (pc)'],
+            df_plot['Eje Z (pc)'],
+            c=df_plot['Densidad (%)'],
             cmap='plasma',
             vmin=5,
             vmax=100,
-            s=20,
-            alpha=0.75,
+            s=22,
+            alpha=0.8,
+            depthshade=False,  # Evita que Matplotlib oscurezca los puntos
             edgecolors='none'
         )
 
@@ -640,10 +658,15 @@ class Matplotlib3DRenderer:
         ax.xaxis.pane.fill = False
         ax.yaxis.pane.fill = False
         ax.zaxis.pane.fill = False
+
+        # Atenúa la rejilla del cubo para que destaque la nebulosa
+        ax.xaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
+        ax.yaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
+        ax.zaxis._axinfo["grid"]['color'] = (0.3, 0.3, 0.3, 0.4)
         ax.set_title(f'Simulation: {title}', color='white', fontsize=12)
 
         buf = io.BytesIO()
         fig_mpl.savefig(buf, format='png', facecolor='#111111')
-        plt.close(fig_mpl)  # Libera la RAM de inmediato
+        plt.close(fig_mpl)
         buf.seek(0)
         return Image.open(buf).convert('RGB')
