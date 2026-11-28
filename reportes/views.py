@@ -12,7 +12,8 @@ from django.template.loader import render_to_string
 
 # Create your views here.
 
-# Esta vista maneja la visualización del panel de reportes gerenciales. Solo los usuarios con los grupos "Administrador" o "Docente/Divulgador" pueden acceder a esta vista. Se utiliza un formulario para filtrar los reportes por fecha de inicio, fecha de fin y grupo académico.
+# Esta vista maneja la visualización del panel de reportes gerenciales. Solo los usuarios con los grupos "Administrador" o "Docente/Divulgador" 
+# pueden acceder a esta vista. Se utiliza un formulario para filtrar los reportes por fecha de inicio, fecha de fin y grupo académico.
 class ManagementReportsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'reports/management_reports.html'
     
@@ -21,10 +22,10 @@ class ManagementReportsView(LoginRequiredMixin, UserPassesTestMixin, TemplateVie
         user_groups = self.request.user.groups.values_list('name', flat=True) # Obtiene los nombres de los grupos a los que pertenece el usuario
         return 'Administrador' in user_groups or 'Docente/Divulgador' in user_groups
         
-    # Método añadido para manejar el rechazo de permisos limpiamente sin error 404
+    # Método para manejar el rechazo de permisos limpiamente sin error 404
     def handle_no_permission(self):
         messages.warning(self.request, "Acceso denegado: No tienes permisos para ver los reportes gerenciales.")
-        return redirect('dashboard') # Cambia 'dashboard' por la URL a la que quieras devolverlos
+        return redirect('dashboard')
     
     # Este método prepara el contexto que se enviará a la plantilla, incluyendo el formulario de filtrado y los datos seleccionados por el usuario.
     def get_context_data(self, **kwargs):

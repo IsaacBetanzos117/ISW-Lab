@@ -616,9 +616,10 @@ class AsyncTeacherNotification:
         except Exception as e:
             print(f'Error al enviar correo: {str(e)}')
 
-# Esta vista es para rendedizar las graficas 3D.
+# Esta vista es para rendedizar las graficas 3D para entornos de producción como Render con recursos restringidos.
 class Matplotlib3DRenderer:
-    @staticmethod # Permite llamarla directo con Matplotlib3DRenderer.render(...) sin necesidad de instanciar la clase cada vez.
+    # Permite llamarla directo con Matplotlib3DRenderer.render(...) sin necesidad de instanciar la clase cada vez.
+    @staticmethod
     def render(df_3d, title="Simulación 3D"):
         # Filtra el halo muy tenue (<15%) para que no tape el núcleo brillante
         df_plot = df_3d[df_3d['Densidad (%)'] >= 15]

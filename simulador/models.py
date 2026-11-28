@@ -4,7 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from grupos.models import Academic_group
 
 # Create your models here.
-# Esta clase representa la configuración de parámetros físicos de una simulación que un estudiante o docente puede crear, actualizar y guardar en su historial privado.
+# Esta clase representa la configuración de parámetros físicos de una simulación que un estudiante o docente puede crear,
+# actualizar y guardar en su historial privado.
 class Simulation_configuration(models.Model):
     MORPHOLOGICAL_CHOISES = [
         ('esferica', 'Esférica'),

@@ -185,7 +185,7 @@ class SimulationEngine:
         valid_indices = density_matrix.flatten() > 5
         
         # PREPARACIÓN DE DATAFRAMES PARA EXPORTACIÓN A EXCEL
-        # Dataframe 1: Representación de la cuadrícula tridimensional filtrada
+        # Representación de la cuadrícula tridimensional filtrada
         df_export = pd.DataFrame({
             'Eje X (pc)': (X_grid / self.PARSEC).flatten()[valid_indices],
             'Eje Y (pc)': (Y_grid / self.PARSEC).flatten()[valid_indices],
@@ -193,13 +193,13 @@ class SimulationEngine:
             'Densidad (%)': density_matrix.flatten()[valid_indices]
         })
         
-        # Dataframe 2: Ficha técnica de la receta simulada
+        # Ficha técnica de la receta simulada
         df_params = pd.DataFrame({
             'Parámetro': ['Nombre', 'Morfología', 'Radio (pc)', 'Densidad base', 'Temperatura (K)', 'Velocidad (km/s)'],
             'Valor': [self.config.configuration_name, self.config.morphological_type, radius_pc, base_density, gas_temp, exp_velocity]
         })
 
-        # Dataframe 3: Evolución de las gráficas cronológicas
+        # Evolución de las gráficas cronológicas
         df_evolution = pd.DataFrame({
             'Tiempo (Años)': time_history,
             'Radio Expansión (pc)': radius_history,
